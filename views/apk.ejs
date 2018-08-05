@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<script>
+$(document).ready(function(){
+	$.ajax({
+		url: '/download',
+		action: 'get',
+		success: function(data){
+			link = ''
+
+			for(i=0; i<data.length; i++){
+				link += '<li><a href=download/'+data[i]+' target=blank>'+data[i]+'</a></li>';
+				
+			}
+
+			fileList.innerHTML = link;
+		}
+	})
+})
+
+</script>
+
+<div class="container-fluid">
+
+<div class="panel panel-default">
+  <div class="panel-heading">List of apk files</div>
+  <div class="panel-body">
+  <div id='fileList'></div>
+  </div>
+</div>
+
+
+
+<div class='panel panel-default'>
+<div class='panel-heading'>Upload a file</div>
+<div class='panel-body'>
+<form id="uploadForm"
+          enctype="multipart/form-data"
+          action="/api/upload"
+          method="post">
+      <input type="file" name="myfile" multiple class="form-control" />
+      <input type="submit" value="Upload apk file" name="Upload" class='btn btn-primary'>
+</form>
+</div>
+</div>
+</div>
+
+</body>
+</html>

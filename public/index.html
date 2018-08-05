@@ -1,0 +1,23 @@
+<script>
+//define a containing function that uses callback function
+function caller(callbak){
+	callbak();
+}
+
+//define the callback function
+function callback(){
+	alert('Callback is exectuted');
+}
+
+//how we use callback function and caller function
+function test(){
+	//callback is passed just like a variable
+	//when it is passed, it executes
+	caller(callback);
+}
+
+//Note: you can change callback, caller, callbak to anyname
+
+</script>
+
+<input type='button' value='Click me' onclick='test();'>

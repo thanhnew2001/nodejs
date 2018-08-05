@@ -1,0 +1,102 @@
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+<script>
+$(function(){
+	
+	$.ajax({
+		url: "/courses",
+		method: "get",
+		success: function(data){
+			for(i=0; i<data.length; i++){
+				$('#courseList').append("<a class='list-group-item' courseName='"+data[i].name+"' courseId='"+data[i]._id+"'>"+data[i].name+"</a>");
+			}
+		}
+	});
+
+	$('#courseList').on('click', 'a', function(){
+		id = $(this).attr("courseId");
+		name = $(this).attr("courseName");
+		$('#selectedCourse').html(id);
+		$('#selectedCourseName').html(name);
+
+		//now get all enrolled students of this course
+		//clear before append
+		$('#enrolledStudents').html('');
+		$.ajax({
+			url: 'studentByCourse/'+id,
+			method: 'get',
+			success: function(data){
+				for(i=0; i<data.length; i++){	
+					$('#enrolledStudents').append("<a class='list-group-item' value='"+data[i]._id+"'>"+data[i].name+"</a>");
+				}
+			}
+		});
+
+		//now get all available students who have not enrolled to this course
+		//clear before append
+		$('#availableStudents').html('');
+		$.ajax({
+			url: 'availableStudentByCourse/'+id,
+			method: 'get',
+			success: function(data){
+				console.log(data);
+				for(i=0; i<data.length; i++){	
+					$('#availableStudents').append("<a class='list-group-item' value='"+data[i]._id+"'>"+data[i].name+"</a>");
+				}
+			}
+		});
+	});
+
+	$('#availableStudents').on('dblclick', 'a', function(){
+		var id = $(this).attr('value');
+		var enrolment = {'courseId': $('#selectedCourse').html() , 'studentId': id};
+
+		$.ajax({
+			url: '/enrolment',
+			method: 'post',
+			data: enrolment,
+			success: function(doc){
+				alert('Success');
+			}
+
+		});
+		$(this).remove();
+	});	
+});
+
+
+</script>
+<div class='container'>
+	<div class='row'>
+
+		<div class='col-md-4'>
+			<h3>Course List</h3>
+			<div id='courseList' class='list-group'></div>
+		</div>
+
+		<div class='col-md-8'>
+			<div>
+			<h3>Selected course:</h3> 
+				<div id='selectedCourse'></div>
+				<div id='selectedCourseName'></div>
+			</div>
+			<div >
+			<h3>Available students:</h3> <div id='availableStudents'></div>
+			</div>
+			<div >
+			<h3>Enrolled students:</h3> <div id='enrolledStudents'></div>
+			</div>
+		</div>
+	</div>
+
+
+
+</div>

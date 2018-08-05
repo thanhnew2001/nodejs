@@ -1,0 +1,146 @@
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+<script>
+$(function(){
+	
+	$.ajax({
+		url: "/students",
+		method: "get",
+		success: function(data){
+			for(i=0; i<data.length; i++){
+				$('#studentList').append("<a class='list-group-item' value='"+data[i]._id+"'>"+data[i].name+"</a>");
+			}
+		}
+	});
+
+
+	$('#studentList').on('click', 'a', function(){
+		id = $(this).attr("value");
+
+		$.ajax({
+			url: "/student/"+id,
+			method: "get",
+			success: function(data){
+				$('#name').val(data.name);
+				$('#yob').val(data.yob);
+				$('#id').val(data._id);
+			}
+
+		});
+	});
+});
+
+
+function saveOrUpdate(){
+	id = $('#id').val();
+
+	if(id==='')
+		add();
+	else
+		update();
+}
+
+function update(){
+	student = {"name": $('#name').val(), "yob": $('#yob').val()};
+	id = $('#id').val();
+
+	$.ajax({
+		url: "/student/"+id, 
+		method: "put",
+		dataType: "json",
+
+		data: student,
+		success: function(data){
+			$('#studentList').append("<a class='list-group-item' value='"+data._id+"'>"+data.name+"</a>");
+		}
+	});
+}
+
+function add(){
+	mycase = {"lat": $('#lat').val(), "lon": $('#lon').val()};
+
+	$.ajax({
+		url: "/hotspots",
+		method: "post",
+		dataType: "json",
+
+		data: mycase,
+		success: function(data){
+			$('#studentList').append("<a class='list-group-item' value='"+data._id+"'>"+data.name+"</a>");
+		}
+
+	});
+}
+
+function remove(){
+	id = $('#id').val();
+
+	$.ajax({
+		url: "/student/"+id, 
+		method: "delete",
+		dataType: "json",
+		success: function(data){
+			alert('Remove successfully');
+		}
+	});
+
+}
+
+
+
+function search(){
+	$.ajax({
+		url: 'student/search/'+$('#studentSearch').val(),
+		method: 'get',
+		success: function(data){
+			console.log(data);
+		}
+
+	});
+} 
+</script>
+<div class='container'>
+	<div class='row'>
+
+		<div class='col-md-4'>
+			<h3>Student List</h3>
+			<input type='text' id='studentSearch' onkeypress='search();'/>
+			<div id='studentList' class='list-group'></div>
+		</div>
+
+		<div class='col-md-8'>
+			<div>
+				<h3>Student Form</h3>
+				<input tye='text' class='form-control' name='id' id='id'/>
+
+				<label class='form-label'>Name</label>
+				<input type='text' class='form-control' name='lat' id='lat'/>
+				<label class='form-label'>Year of birth</label>
+				<input type='text' class='form-control' name='lon' id='lon'/>
+				
+				<input type='button' value='Save' onclick='saveOrUpdate();' />
+				<input type='button' value='Add new' onclick="$('.form-control').val('')" />
+				<input type='button' value='Remove' onclick="remove();" />
+			</div>
+		</div>
+	</div>
+
+<form id="uploadForm"
+          enctype="multipart/form-data"
+          action="/api/upload"
+          method="post">
+      <input type="file" name="myfile" multiple />
+      <input type="submit" value="Upload File" name="submit">
+      <input type='text' id='random' name='random'><br>
+      <span id = "status"></span>
+</form>
+
+</div>
